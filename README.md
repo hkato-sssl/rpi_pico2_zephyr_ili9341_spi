@@ -189,3 +189,7 @@ The demo can be changed by replacing the final `-Dxxxx` option in the `west buil
 -DCONFIG_LV_Z_DEMO_KEYPAD_AND_ENCODER=y
 -DCONFIG_LV_Z_DEMO_RENDER=y
 ```
+
+## Related Article
+
+https://qiita.com/hkato-sssl/items/e95881f889e9d5217201
