@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2026 Hidekazu Kato <hkato.sssl@gmail.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+#include <zephyr/dt-bindings/display/panel.h>
+#include <zephyr/dt-bindings/mipi_dbi/mipi_dbi.h>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {
+	aliases {
+		backlight0 = &tft_led0;
+	};
+
+	chosen {
+		zephyr,console = &cdc_acm_uart0;
+        	zephyr,shell-uart = &cdc_acm_uart0;
+        	zephyr,display = &lcd;
+        	zephyr,touch = &touch0;
+	};
+
+	pointer {
+		compatible = "zephyr,lvgl-pointer-input";
+		input = <&touch0>;
+	};
+
+	mipi_dbi {
+		compatible = "zephyr,mipi-dbi-spi";
+		spi-dev = <&spi0>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		dc-gpios = <&gpio0 21 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
+
+		lcd: ili9341@0 {
+			compatible = "ilitek,ili9341";
+			reg = <0>;
+
+			mipi-max-frequency = <40000000>;
+
+			width = <240>;
+			height = <320>;
+			v-mirror;
+
+			pixel-format = <PANEL_PIXEL_FORMAT_RGB_565X>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		tft_led0: tft-led0 {
+			gpios = <&gpio0 20 GPIO_ACTIVE_HIGH>;
+			label = "TFT LCD Backlight 0";
+		};
+	};
+};
+
+&zephyr_udc0 {
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
+
+&spi0 {
+	status = "okay";
+	cs-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>,
+		   <&gpio0 27 GPIO_ACTIVE_LOW>;
+
+	touch0: xpt2046@1 {
+		compatible = "xptek,xpt2046";
+
+		reg = <1>;
+
+		spi-max-frequency = <2000000>;
+
+		int-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
+
+		touchscreen-size-x = <240>;
+		touchscreen-size-y = <320>;
+
+		min-x = <200>;
+		max-x = <3900>;
+
+		min-y = <200>;
+		max-y = <3900>;
+	};
+};
